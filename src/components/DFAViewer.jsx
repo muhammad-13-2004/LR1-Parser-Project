@@ -122,20 +122,20 @@ function drawDFA(parserData, svgEl, activeState, activeTransition, darkMode, onS
 
   const C = darkMode
     ? {
-        nodeFill:   '#1e1e1e', nodeBorder: '#444',
-        headerFill: '#252525', headerText: '#e5e5e5',
-        itemText:   '#d4d4d4', dimText: '#888',
-        edge: '#555', edgeLabel: '#aaa',
-        active: '#f59e0b', accept: '#4ade80', start: '#60a5fa',
-        divider: '#333',
+        nodeFill:   '#fff4e3', nodeBorder: '#704426',
+        headerFill: '#e8d1b2', headerText: '#27170d',
+        itemText:   '#27170d', dimText: '#74553d',
+        edge: '#704426', edgeLabel: '#4a2b19',
+        active: '#5c3218', accept: '#14532d', start: '#321c10',
+        divider: '#caa986',
       }
     : {
-        nodeFill:   '#ffffff', nodeBorder: '#d1d5db',
-        headerFill: '#f9fafb', headerText: '#111',
-        itemText:   '#111',   dimText: '#6b7280',
-        edge: '#9ca3af', edgeLabel: '#4b5563',
-        active: '#d97706', accept: '#15803d', start: '#1d4ed8',
-        divider: '#e5e5e5',
+        nodeFill:   '#fff8eb', nodeBorder: '#8a5b38',
+        headerFill: '#efe0c9', headerText: '#2d1b10',
+        itemText:   '#2d1b10', dimText: '#7b5d46',
+        edge: '#8a5b38', edgeLabel: '#5a351f',
+        active: '#3a2114', accept: '#166534', start: '#3a2114',
+        divider: '#d8c0a3',
       };
 
   /* arrowheads */

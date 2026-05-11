@@ -7,12 +7,15 @@ export const EPSILON = 'ε';
 export const END_MARKER = '$';
 export const AUGMENTED_START = "S'";
 
+const TOKEN_BOUNDARIES = new Set(['(', ')', '[', ']', '{', '}', '+', '-', '*', '/', ',', ';', ':']);
+
 /**
  * Parse raw grammar text into a structured grammar object.
  * Input format: "S -> A B | C" or "A -> a A"
  */
 export function parseGrammar(text) {
   const lines = text.trim().split('\n').filter(l => l.trim() !== '');
+  const parsedLines = [];
   const productions = [];
   const nonTerminals = new Set();
   const terminals = new Set();
@@ -23,9 +26,15 @@ export function parseGrammar(text) {
       throw new Error(`Invalid production: "${line}"`);
     }
     const lhs = arrowMatch[1].trim();
-    const rhsAlternatives = arrowMatch[2].split('|').map(alt => alt.trim().split(/\s+/).filter(s => s !== ''));
-
     nonTerminals.add(lhs);
+    parsedLines.push({ lhs, rhsText: arrowMatch[2] });
+  }
+
+  const nonTerminalList = [...nonTerminals].sort((a, b) => b.length - a.length);
+
+  for (const { lhs, rhsText } of parsedLines) {
+    const rhsAlternatives = rhsText.split('|').map(alt => tokenizeRhs(alt, nonTerminalList));
+
     for (const rhs of rhsAlternatives) {
       if (rhs.length === 0) {
         throw new Error(`Empty production for ${lhs}. Use ε or leave blank for epsilon.`);
@@ -53,6 +62,53 @@ export function parseGrammar(text) {
     terminals,
     startSymbol: productions[0].lhs,
   };
+}
+
+function tokenizeRhs(rhsText, nonTerminalList) {
+  const compact = rhsText.replace(/\s+/g, '');
+
+  if (compact === EPSILON) {
+    return [EPSILON];
+  }
+
+  const tokens = [];
+  let index = 0;
+
+  while (index < compact.length) {
+    const nonTerminal = nonTerminalList.find(nt => compact.startsWith(nt, index));
+    if (nonTerminal) {
+      tokens.push(nonTerminal);
+      index += nonTerminal.length;
+      continue;
+    }
+
+    if (compact.startsWith(EPSILON, index)) {
+      tokens.push(EPSILON);
+      index += EPSILON.length;
+      continue;
+    }
+
+    if (TOKEN_BOUNDARIES.has(compact[index])) {
+      tokens.push(compact[index]);
+      index += 1;
+      continue;
+    }
+
+    let end = index + 1;
+    while (
+      end < compact.length &&
+      !TOKEN_BOUNDARIES.has(compact[end]) &&
+      !compact.startsWith(EPSILON, end) &&
+      !nonTerminalList.some(nt => compact.startsWith(nt, end))
+    ) {
+      end += 1;
+    }
+
+    tokens.push(compact.slice(index, end));
+    index = end;
+  }
+
+  return tokens;
 }
 
 /**

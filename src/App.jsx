@@ -1,5 +1,3 @@
-
-
 import { useParser } from "./context/ParserContext.jsx";
 import GrammarInput from "./components/GrammarInput.jsx";
 import DFAViewer from "./components/DFAViewer.jsx";
